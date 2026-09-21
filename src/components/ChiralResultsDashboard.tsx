@@ -6,6 +6,7 @@ import {
 import type { ChiralAnalysisResult, StandardsConcentration } from '../types';
 import { PlotlyChart } from './PlotlyChart';
 import type { Data, Layout } from 'plotly.js-dist-min';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ChiralResultsDashboardProps {
   chiralResult: ChiralAnalysisResult;
@@ -18,6 +19,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
   lStandards,
   dStandards,
 }) => {
+  const { t } = useLanguage();
   const {
     cL,
     cD,
@@ -52,7 +54,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
   const donutLayout: Partial<Layout> = useMemo(() => {
     return {
       title: {
-        text: 'Enantiomer Composition (%)',
+        text: t.donutTitle,
         font: { size: 12, color: '#334155', weight: 600 as any },
       },
       showlegend: false,
@@ -67,7 +69,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
         },
       ],
     };
-  }, [ee, dominantEnantiomer]);
+  }, [ee, dominantEnantiomer, t.donutTitle]);
 
   const barData = useMemo(() => {
     const traces: Data[] = [
@@ -94,17 +96,17 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
   const barLayout: Partial<Layout> = useMemo(() => {
     return {
       title: {
-        text: `Concentration Comparison (${lStandards.unit})`,
+        text: `${t.barTitle} (${lStandards.unit})`,
         font: { size: 12, color: '#334155', weight: 600 as any },
       },
       yaxis: {
-        title: { text: `Concentration / ${lStandards.unit}`, font: { size: 10 } },
+        title: { text: `${t.axisEnantiomerConc} ${lStandards.unit}`, font: { size: 10 } },
         showgrid: true,
         gridcolor: '#f1f5f9',
       },
       margin: { l: 45, r: 15, t: 30, b: 35 },
     };
-  }, [lStandards.unit]);
+  }, [lStandards.unit, t.barTitle, t.axisEnantiomerConc]);
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 mt-6 transition-all">
@@ -113,10 +115,10 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
         <div>
           <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <Scale className="w-5 h-5 text-indigo-600" />
-            Chiral Quantification & Enantiomeric Excess Dashboard
+            {t.dashboardTitle}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Simultaneous solution of L-Arg and D-Arg concentrations based on optical superposition and total mass balance.
+            {t.dashboardSubtitle}
           </p>
         </div>
 
@@ -124,12 +126,12 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
           {isValidPhysical ? (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-full">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              Valid Physical Solution
+              {t.validPhysicalBadge}
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold rounded-full">
               <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-              Non-Physical Model Warning
+              {t.nonPhysicalBadge}
             </span>
           )}
         </div>
@@ -141,7 +143,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
           <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
           <div className="text-xs">
             <strong className="font-bold text-sm block mb-1">
-              Model Assumption Discrepancy Alert
+              {t.discrepancyAlertTitle}
             </strong>
             <p className="leading-relaxed">{warningMessage}</p>
             <div className="mt-2 text-rose-700 font-mono text-[11px] bg-white/70 p-2 rounded border border-rose-200">
@@ -158,7 +160,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
         <div className="p-4 bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl shadow-xs relative overflow-hidden">
           <div className="flex justify-between items-start">
             <span className="text-xs font-semibold text-purple-700 uppercase tracking-wider">
-              L-Arginine Concentration
+              {t.lArgConcTitle}
             </span>
             <span className="w-2.5 h-2.5 rounded-full bg-purple-600" />
           </div>
@@ -167,7 +169,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
             <span className="text-sm font-semibold text-purple-700">{lStandards.unit}</span>
           </div>
           <div className="mt-2 flex items-center justify-between text-xs text-purple-800/80">
-            <span>Fraction:</span>
+            <span>{t.fractionLabel}</span>
             <strong className="font-mono text-purple-950 font-bold">{lFraction.toFixed(1)}%</strong>
           </div>
         </div>
@@ -176,7 +178,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
         <div className="p-4 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl shadow-xs relative overflow-hidden">
           <div className="flex justify-between items-start">
             <span className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
-              D-Arginine Concentration
+              {t.dArgConcTitle}
             </span>
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
           </div>
@@ -185,7 +187,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
             <span className="text-sm font-semibold text-amber-700">{dStandards.unit}</span>
           </div>
           <div className="mt-2 flex items-center justify-between text-xs text-amber-800/80">
-            <span>Fraction:</span>
+            <span>{t.fractionLabel}</span>
             <strong className="font-mono text-amber-950 font-bold">{dFraction.toFixed(1)}%</strong>
           </div>
         </div>
@@ -194,7 +196,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
         <div className="p-4 bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-200 rounded-xl shadow-xs relative overflow-hidden">
           <div className="flex justify-between items-start">
             <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
-              Total Arginine (C_L + C_D)
+              {t.totalArgCheckTitle}
             </span>
             <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
           </div>
@@ -203,7 +205,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
             <span className="text-sm font-semibold text-blue-700">{lStandards.unit}</span>
           </div>
           <div className="mt-2 flex items-center justify-between text-xs text-blue-800/80">
-            <span>L/D Ratio (C_L / C_D):</span>
+            <span>{t.ldRatioLabel}</span>
             <strong className="font-mono text-blue-950 font-bold">
               {isFinite(ldRatio) ? ldRatio.toFixed(2) : '∞'}
             </strong>
@@ -214,7 +216,7 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
         <div className="p-4 bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-200 rounded-xl shadow-xs relative overflow-hidden">
           <div className="flex justify-between items-start">
             <span className="text-xs font-semibold text-rose-700 uppercase tracking-wider">
-              Enantiomeric Excess (ee)
+              {t.eeTitle}
             </span>
             <span
               className={`px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -232,10 +234,10 @@ export const ChiralResultsDashboard: React.FC<ChiralResultsDashboardProps> = ({
             {ee.toFixed(1)}%
           </div>
           <div className="mt-2 flex items-center justify-between text-xs text-rose-800/80">
-            <span>Dominant:</span>
+            <span>{t.dominantLabel}</span>
             <strong className="text-rose-950 font-bold">
               {dominantEnantiomer === 'Racemic'
-                ? 'Racemic (1:1)'
+                ? t.racemic
                 : `${dominantEnantiomer}-Arginine`}
             </strong>
           </div>

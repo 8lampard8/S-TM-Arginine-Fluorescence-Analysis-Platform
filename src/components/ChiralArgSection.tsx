@@ -12,6 +12,7 @@ import type {
 } from '../types';
 import { PlotlyChart } from './PlotlyChart';
 import type { Data, Layout } from 'plotly.js-dist-min';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ChiralArgSectionProps {
   chiralResult: ChiralAnalysisResult;
@@ -36,6 +37,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
   baselineMode,
   onChangeBaselineMode,
 }) => {
+  const { t } = useLanguage();
   const {
     lRegression,
     dRegression,
@@ -168,12 +170,12 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
 
     return {
       title: {
-        text: 'Dual Chiral Calibration Curves (L-Arg vs D-Arg in S-TM/Al³⁺)',
+        text: t.chartTitleChiralCal,
         font: { size: 13, color: '#1e293b', weight: 600 as any },
       },
       xaxis: {
         title: {
-          text: `Enantiomer Concentration / ${lStandards.unit}`,
+          text: `${t.axisEnantiomerConc} ${lStandards.unit}`,
           font: { size: 11, color: '#475569' },
         },
         showgrid: true,
@@ -192,7 +194,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
         font: { size: 10 },
       },
     };
-  }, [responseMode, lStandards.unit]);
+  }, [responseMode, lStandards.unit, t.chartTitleChiralCal, t.axisEnantiomerConc]);
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 flex flex-col h-full">
@@ -204,15 +206,15 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
           </div>
           <div>
             <h2 className="text-base font-bold text-slate-900 tracking-tight">
-              Chiral Quantification of L-/D-Arginine
+              {t.chiralArgTitle}
             </h2>
             <p className="text-[11px] text-slate-500">
-              S-TM + Al³⁺ Coordinated System (Enantioselective Response)
+              {t.chiralArgSubtitle}
             </p>
           </div>
         </div>
         <span className="text-xs font-semibold px-2.5 py-1 bg-purple-50 text-purple-700 rounded-md border border-purple-200">
-          Step 5
+          {t.stepBadge5}
         </span>
       </div>
 
@@ -221,7 +223,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
         <div className="flex items-center gap-2">
           <Scale className="w-4 h-4 text-purple-600" />
           <span className="font-semibold text-slate-700">
-            Chiral Assay Baseline (S-TM + Al³⁺):
+            {t.chiralBaseline}
           </span>
         </div>
         <span className="font-mono font-bold text-purple-900">
@@ -236,13 +238,13 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
           <div className="flex items-center justify-between">
             <span className="font-bold text-purple-800 flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-purple-600 inline-block" />
-              L-Arg Standards ({lStandards.unit}):
+              {t.lArgStandards} ({lStandards.unit}):
             </span>
           </div>
 
           <div className="grid grid-cols-3 gap-1.5">
             <div>
-              <label className="text-[10px] text-slate-500 block mb-0.5">L-Std 1</label>
+              <label className="text-[10px] text-slate-500 block mb-0.5">{t.lStd1}</label>
               <input
                 type="number"
                 value={lStandards.std1}
@@ -251,7 +253,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
               />
             </div>
             <div>
-              <label className="text-[10px] text-slate-500 block mb-0.5">L-Std 2</label>
+              <label className="text-[10px] text-slate-500 block mb-0.5">{t.lStd2}</label>
               <input
                 type="number"
                 value={lStandards.std2}
@@ -260,7 +262,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
               />
             </div>
             <div>
-              <label className="text-[10px] text-slate-500 block mb-0.5">L-Std 3</label>
+              <label className="text-[10px] text-slate-500 block mb-0.5">{t.lStd3}</label>
               <input
                 type="number"
                 value={lStandards.std3}
@@ -276,13 +278,13 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
           <div className="flex items-center justify-between">
             <span className="font-bold text-amber-800 flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
-              D-Arg Standards ({dStandards.unit}):
+              {t.dArgStandards} ({dStandards.unit}):
             </span>
           </div>
 
           <div className="grid grid-cols-3 gap-1.5">
             <div>
-              <label className="text-[10px] text-slate-500 block mb-0.5">D-Std 1</label>
+              <label className="text-[10px] text-slate-500 block mb-0.5">{t.dStd1}</label>
               <input
                 type="number"
                 value={dStandards.std1}
@@ -291,7 +293,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
               />
             </div>
             <div>
-              <label className="text-[10px] text-slate-500 block mb-0.5">D-Std 2</label>
+              <label className="text-[10px] text-slate-500 block mb-0.5">{t.dStd2}</label>
               <input
                 type="number"
                 value={dStandards.std2}
@@ -300,7 +302,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
               />
             </div>
             <div>
-              <label className="text-[10px] text-slate-500 block mb-0.5">D-Std 3</label>
+              <label className="text-[10px] text-slate-500 block mb-0.5">{t.dStd3}</label>
               <input
                 type="number"
                 value={dStandards.std3}
@@ -325,7 +327,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
       {/* Slopes & Chiral Discrimination Factor Highlight */}
       <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
         <div className="p-2 bg-purple-50/50 border border-purple-200 rounded-lg">
-          <span className="text-[10px] text-purple-700 font-semibold block">L-Arg Calibration</span>
+          <span className="text-[10px] text-purple-700 font-semibold block">{t.lCalCard}</span>
           <div className="font-mono text-[11px] font-bold text-purple-950 truncate">
             {lRegression.equation}
           </div>
@@ -333,7 +335,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
         </div>
 
         <div className="p-2 bg-amber-50/50 border border-amber-200 rounded-lg">
-          <span className="text-[10px] text-amber-700 font-semibold block">D-Arg Calibration</span>
+          <span className="text-[10px] text-amber-700 font-semibold block">{t.dCalCard}</span>
           <div className="font-mono text-[11px] font-bold text-amber-950 truncate">
             {dRegression.equation}
           </div>
@@ -342,13 +344,13 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
 
         <div className="p-2 bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg text-center flex flex-col justify-center">
           <span className="text-[10px] text-indigo-700 font-bold block">
-            Chiral Discrimination
+            {t.chiralDiscriminationTitle}
           </span>
           <div className="font-mono text-sm font-extrabold text-indigo-900">
             {discriminationFactor.toFixed(2)}×
           </div>
           <div className="text-[9px] text-slate-500 font-mono">
-            {discriminationFactorType} ratio
+            {discriminationFactorType} {t.ratioLabel}
           </div>
         </div>
       </div>
@@ -357,7 +359,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
       <div className="mt-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-slate-600">
           <Settings2 className="w-3.5 h-3.5 text-slate-500" />
-          <span className="text-[11px] font-medium">Coupled Model Intercept (b):</span>
+          <span className="text-[11px] font-medium">{t.coupledInterceptLabel}</span>
         </div>
 
         <div className="flex items-center gap-1 text-[11px]">
@@ -370,7 +372,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
             }`}
             title="Use average of L and D intercepts: (bL + bD)/2"
           >
-            (bL+bD)/2 (Default)
+            {t.interceptAvg}
           </button>
           <button
             onClick={() => onChangeBaselineMode('zero')}
@@ -381,7 +383,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
             }`}
             title="Assume zero intercept (b = 0)"
           >
-            b = 0
+            {t.interceptZero}
           </button>
           <button
             onClick={() => onChangeBaselineMode('weighted')}
@@ -392,7 +394,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
             }`}
             title="Weighted fraction intercept: fL*bL + fD*bD"
           >
-            Weighted
+            {t.interceptWeighted}
           </button>
         </div>
       </div>

@@ -10,6 +10,7 @@ import type {
 } from '../types';
 import { PlotlyChart } from './PlotlyChart';
 import type { Data, Layout } from 'plotly.js-dist-min';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface TotalArgSectionProps {
   result: TotalArgAnalysisResult;
@@ -26,7 +27,8 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
   responseMode,
   onChangeResponseMode,
 }) => {
-  const { regression, calculatedTotalArg, responses, isExtrapolated, extrapolationWarning } =
+  const { t } = useLanguage();
+  const { regression, calculatedTotalArg, responses, isExtrapolated } =
     result;
 
   const handleStdChange = (field: 'std1' | 'std2' | 'std3', value: string) => {
@@ -113,12 +115,12 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
 
     return {
       title: {
-        text: 'Total Arginine Calibration Curve (S-TM)',
+        text: t.chartTitleTotalCal,
         font: { size: 13, color: '#1e293b', weight: 600 as any },
       },
       xaxis: {
         title: {
-          text: `Arginine Concentration / ${standards.unit}`,
+          text: `${t.axisArgConc} ${standards.unit}`,
           font: { size: 11, color: '#475569' },
         },
         showgrid: true,
@@ -137,7 +139,14 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
         font: { size: 10 },
       },
     };
-  }, [responseMode, standards.unit]);
+  }, [responseMode, standards.unit, t.chartTitleTotalCal, t.axisArgConc]);
+
+  const qcLabel =
+    regression.quality === 'Good'
+      ? t.qcGood
+      : regression.quality === 'Acceptable'
+      ? t.qcAcceptable
+      : t.qcWarning;
 
   const qcColor =
     regression.quality === 'Good'
@@ -156,24 +165,24 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
           </div>
           <div>
             <h2 className="text-base font-bold text-slate-900 tracking-tight">
-              Total Arginine Quantification
+              {t.totalArgTitle}
             </h2>
             <p className="text-[11px] text-slate-500">
-              S-TM Probe System (No metal ion needed)
+              {t.totalArgSubtitle}
             </p>
           </div>
         </div>
         <span className="text-xs font-semibold px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md border border-blue-200">
-          Step 4
+          {t.stepBadge4}
         </span>
       </div>
 
       {/* 1. Standards Concentration Setting */}
       <div className="mt-4 p-3 bg-slate-50 border border-slate-200/80 rounded-lg text-xs space-y-2.5">
         <div className="flex items-center justify-between">
-          <span className="font-semibold text-slate-700">1. Arg Standard Concentrations:</span>
+          <span className="font-semibold text-slate-700">{t.standardsTitle}</span>
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-500">Unit:</span>
+            <span className="text-slate-500">{t.unitLabel}</span>
             <select
               value={standards.unit}
               onChange={(e) => handleUnitChange(e.target.value as ConcentrationUnit)}
@@ -187,7 +196,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
 
         <div className="grid grid-cols-3 gap-2">
           <div>
-            <label className="text-[11px] text-slate-500 block mb-0.5">Arg Standard 1</label>
+            <label className="text-[11px] text-slate-500 block mb-0.5">{t.argStd1}</label>
             <div className="flex items-center bg-white border border-slate-300 rounded px-2 py-1">
               <input
                 type="number"
@@ -201,7 +210,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
           </div>
 
           <div>
-            <label className="text-[11px] text-slate-500 block mb-0.5">Arg Standard 2</label>
+            <label className="text-[11px] text-slate-500 block mb-0.5">{t.argStd2}</label>
             <div className="flex items-center bg-white border border-slate-300 rounded px-2 py-1">
               <input
                 type="number"
@@ -215,7 +224,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
           </div>
 
           <div>
-            <label className="text-[11px] text-slate-500 block mb-0.5">Arg Standard 3</label>
+            <label className="text-[11px] text-slate-500 block mb-0.5">{t.argStd3}</label>
             <div className="flex items-center bg-white border border-slate-300 rounded px-2 py-1">
               <input
                 type="number"
@@ -233,7 +242,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
       {/* 2. Response Metric Selection */}
       <div className="mt-3.5 p-3 bg-slate-50 border border-slate-200/80 rounded-lg text-xs">
         <span className="font-semibold text-slate-700 block mb-2">
-          2. Fluorescence Response Formulation:
+          {t.responseFormulationTitle}
         </span>
         <div className="grid grid-cols-3 gap-1.5">
           <button
@@ -245,7 +254,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
             }`}
           >
             <div className="font-mono text-xs">ΔF / F₀</div>
-            <div className="text-[10px] opacity-90">Relative (Recommended)</div>
+            <div className="text-[10px] opacity-90">{t.modeRelative}</div>
           </button>
 
           <button
@@ -257,7 +266,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
             }`}
           >
             <div className="font-mono text-xs">ΔF = F - F₀</div>
-            <div className="text-[10px] opacity-90">Change</div>
+            <div className="text-[10px] opacity-90">{t.modeDelta}</div>
           </button>
 
           <button
@@ -269,7 +278,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
             }`}
           >
             <div className="font-mono text-xs">F</div>
-            <div className="text-[10px] opacity-90">Raw Intensity</div>
+            <div className="text-[10px] opacity-90">{t.modeRaw}</div>
           </button>
         </div>
       </div>
@@ -277,8 +286,8 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
       {/* Extracted Values & Responses Micro-table */}
       <div className="mt-3 border border-slate-200 rounded-lg overflow-hidden text-xs">
         <div className="bg-slate-100/80 px-3 py-1.5 font-semibold text-slate-700 text-[11px] flex justify-between">
-          <span>Intensities & Responses at λ = {result.extracted.actualWavelength} nm</span>
-          <span className="text-slate-500 font-normal">F₀ = {responses.f0.toFixed(1)} a.u.</span>
+          <span>{t.extractedHeader} {result.extracted.actualWavelength} nm</span>
+          <span className="text-slate-500 font-normal">{t.baselineProbe} {responses.f0.toFixed(1)} a.u.</span>
         </div>
         <div className="grid grid-cols-4 divide-x divide-slate-200 text-center font-mono text-[11px] bg-white">
           <div className="p-1.5">
@@ -317,24 +326,24 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
       {/* Regression Parameters & QC Rating */}
       <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
         <div className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-center">
-          <span className="text-[10px] text-slate-500 block">Fitted Equation</span>
+          <span className="text-[10px] text-slate-500 block">{t.fittedEquation}</span>
           <span className="font-mono font-bold text-slate-800 text-[11px] truncate block">
             {regression.equation}
           </span>
         </div>
 
         <div className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-center">
-          <span className="text-[10px] text-slate-500 block">Slope (k) / Intercept (b)</span>
+          <span className="text-[10px] text-slate-500 block">{t.slopeIntercept}</span>
           <span className="font-mono font-semibold text-slate-700 text-[11px]">
             {regression.slope.toFixed(4)} / {regression.intercept.toFixed(4)}
           </span>
         </div>
 
         <div className={`p-2 border rounded-lg text-center ${qcColor}`}>
-          <span className="text-[10px] block opacity-80">R² Coefficient</span>
+          <span className="text-[10px] block opacity-80">{t.rSquaredCoeff}</span>
           <span className="font-mono font-bold text-xs">
             {regression.rSquared.toFixed(4)}{' '}
-            <span className="text-[10px] font-normal">({regression.quality})</span>
+            <span className="text-[10px] font-normal">({qcLabel})</span>
           </span>
         </div>
       </div>
@@ -344,7 +353,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
         <div className="flex items-center justify-between">
           <div>
             <span className="text-xs font-medium text-slate-500 block">
-              Total Arginine Concentration (C_total)
+              {t.totalArgBannerLabel}
             </span>
             <div className="text-xl font-extrabold text-blue-900 tracking-tight font-mono">
               C_total = {calculatedTotalArg.toFixed(2)} {standards.unit}
@@ -363,7 +372,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
         {isExtrapolated && (
           <div className="mt-2.5 p-2 bg-amber-100/80 border border-amber-300 text-amber-900 rounded-md text-xs flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
-            <span className="font-semibold">{extrapolationWarning}</span>
+            <span className="font-semibold">{t.extrapolationWarning}</span>
           </div>
         )}
       </div>

@@ -11,6 +11,7 @@ import type {
   MixtureValidationItem,
   StandardsConcentration,
 } from '../types';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface MixtureValidationSectionProps {
   chiralResult: ChiralAnalysisResult;
@@ -25,6 +26,7 @@ export const MixtureValidationSection: React.FC<MixtureValidationSectionProps> =
   validationItems,
   onUpdateValidationItems,
 }) => {
+  const { t } = useLanguage();
   const { lRegression, dRegression, cTotal } = chiralResult;
 
   const defaultTotalConc = cTotal > 0 ? cTotal : 20;
@@ -129,14 +131,14 @@ export const MixtureValidationSection: React.FC<MixtureValidationSectionProps> =
           <div className="flex items-center gap-2">
             <Flask className="w-5 h-5 text-indigo-600" />
             <h2 className="text-base font-bold text-slate-900 tracking-tight">
-              Mixture Validation Module (Scientific Paper Rigor)
+              {t.validationTitle}
             </h2>
             <span className="text-[11px] font-semibold px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
-              Optional Verification
+              {t.validationBadge}
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Validate chiral model accuracy across predetermined enantiomeric ratios (100:0, 75:25, 50:50, 25:75, 0:100).
+            {t.validationDesc}
           </p>
         </div>
 
@@ -146,14 +148,14 @@ export const MixtureValidationSection: React.FC<MixtureValidationSectionProps> =
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Load Standard Ratios
+            {t.loadRatiosBtn}
           </button>
           <button
             onClick={handleAddCustomRow}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg font-medium transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            Add Custom Ratio
+            {t.addCustomRatioBtn}
           </button>
         </div>
       </div>
@@ -163,23 +165,23 @@ export const MixtureValidationSection: React.FC<MixtureValidationSectionProps> =
         <table className="w-full text-left border-collapse">
           <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-[11px]">
             <tr>
-              <th className="p-2.5 border-r border-slate-200">Mixture Sample</th>
-              <th className="p-2.5 border-r border-slate-200 text-center">Known L% / D%</th>
+              <th className="p-2.5 border-r border-slate-200">{t.thMixture}</th>
+              <th className="p-2.5 border-r border-slate-200 text-center">{t.thKnownPct}</th>
               <th className="p-2.5 border-r border-slate-200 text-center">
-                Total Conc ({lStandards.unit})
+                {t.thTotalConc} ({lStandards.unit})
               </th>
-              <th className="p-2.5 border-r border-slate-200 text-center">Predicted L%</th>
-              <th className="p-2.5 border-r border-slate-200 text-center">Recovery (%)</th>
-              <th className="p-2.5 border-r border-slate-200 text-center">Absolute Error (%)</th>
-              <th className="p-2.5 border-r border-slate-200 text-center">Relative Error (%)</th>
-              <th className="p-2.5 text-center">Action</th>
+              <th className="p-2.5 border-r border-slate-200 text-center">{t.thPredictedLPct}</th>
+              <th className="p-2.5 border-r border-slate-200 text-center">{t.thRecovery}</th>
+              <th className="p-2.5 border-r border-slate-200 text-center">{t.thAbsError}</th>
+              <th className="p-2.5 border-r border-slate-200 text-center">{t.thRelError}</th>
+              <th className="p-2.5 text-center">{t.thAction}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 font-mono text-[11px] text-slate-700">
             {validationItems.length === 0 ? (
               <tr>
                 <td colSpan={8} className="p-6 text-center text-slate-400 font-sans">
-                  No validation entries currently loaded. Click "Load Standard Ratios" above to test standard mixtures.
+                  {t.noValidationMsg}
                 </td>
               </tr>
             ) : (
@@ -242,7 +244,7 @@ export const MixtureValidationSection: React.FC<MixtureValidationSectionProps> =
       <div className="mt-3 flex items-start gap-2 text-xs text-slate-500 bg-slate-50 p-2.5 rounded-lg">
         <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
         <div>
-          <strong>Scientific Rigor Guide:</strong> For manuscript preparation, measuring recovery across diverse L/D ratios (e.g., 90:10 to 10:90) demonstrates the robustness of the probe against potential synergistic or competitive cooperative binding effects.
+          <strong>{t.validationGuideTitle}</strong> {t.validationGuideDesc}
         </div>
       </div>
     </div>

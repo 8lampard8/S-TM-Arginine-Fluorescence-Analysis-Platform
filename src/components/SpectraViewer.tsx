@@ -8,6 +8,7 @@ import type { RawSpectrumRow } from '../types';
 import { PlotlyChart } from './PlotlyChart';
 import { autoDetectPeakWavelength, findNearestSpectrumRow } from '../utils/math';
 import type { Data, Layout } from 'plotly.js-dist-min';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface SpectraViewerProps {
   spectra: RawSpectrumRow[];
@@ -22,6 +23,7 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
   selectedWavelength,
   onSelectWavelength,
 }) => {
+  const { t } = useLanguage();
   const [activeFilter, setActiveFilter] = useState<SeriesFilter>('all');
   const [manualInput, setManualInput] = useState<string>(
     selectedWavelength.toString()
@@ -194,27 +196,27 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
         width: item.width,
         dash: item.dash as any,
       },
-      hovertemplate: `<b>${item.name}</b><br>Wavelength: %{x} nm<br>Intensity: %{y:.1f} a.u.<extra></extra>`,
+      hovertemplate: `<b>${item.name}</b><br>${t.axisWavelength}: %{x} nm<br>${t.axisIntensity}: %{y:.1f} a.u.<extra></extra>`,
     }));
 
     return plotlyData;
-  }, [spectra, activeFilter]);
+  }, [spectra, activeFilter, t.axisWavelength, t.axisIntensity]);
 
   const layout: Partial<Layout> = useMemo(() => {
     return {
       title: {
-        text: 'Raw Fluorescence Emission Spectra',
+        text: t.chartTitleSpectra,
         font: { size: 14, color: '#1e293b', weight: 600 as any },
       },
       xaxis: {
-        title: { text: 'Wavelength / nm', font: { size: 12, color: '#475569' } },
+        title: { text: t.axisWavelength, font: { size: 12, color: '#475569' } },
         showgrid: true,
         gridcolor: '#f1f5f9',
         zeroline: false,
       },
       yaxis: {
         title: {
-          text: 'Fluorescence Intensity / a.u.',
+          text: t.axisIntensity,
           font: { size: 12, color: '#475569' },
         },
         showgrid: true,
@@ -263,7 +265,7 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
         },
       ],
     };
-  }, [actualWavelength]);
+  }, [actualWavelength, t.chartTitleSpectra, t.axisWavelength, t.axisIntensity]);
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 transition-all">
@@ -272,10 +274,10 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
         <div>
           <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
             <Activity className="w-4 h-4 text-blue-600" />
-            Interactive Spectral Viewer & Wavelength Selection
+            {t.spectraViewerTitle}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Hover to inspect points, zoom into peaks, or extract intensities at the target feature wavelength.
+            {t.spectraViewerDesc}
           </p>
         </div>
 
@@ -289,7 +291,7 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
                 : 'hover:text-slate-900'
             }`}
           >
-            All Spectra ({traces.length})
+            {t.filterAll} ({traces.length})
           </button>
           <button
             onClick={() => setActiveFilter('total_arg')}
@@ -299,7 +301,7 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
                 : 'hover:text-slate-900'
             }`}
           >
-            Total Arg Series
+            {t.filterTotal}
           </button>
           <button
             onClick={() => setActiveFilter('chiral')}
@@ -309,7 +311,7 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
                 : 'hover:text-slate-900'
             }`}
           >
-            Chiral Series (Al³⁺)
+            {t.filterChiral}
           </button>
           <button
             onClick={() => setActiveFilter('unknowns')}
@@ -319,7 +321,7 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
                 : 'hover:text-slate-900'
             }`}
           >
-            Unknowns Only
+            {t.filterUnknowns}
           </button>
         </div>
       </div>
@@ -328,7 +330,7 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
       <div className="my-3 py-2.5 px-3.5 bg-blue-50/70 border border-blue-200/80 rounded-lg flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
           <Crosshair className="w-4 h-4 text-blue-700 shrink-0" />
-          <span className="font-semibold text-slate-800">Analysis Wavelength:</span>
+          <span className="font-semibold text-slate-800">{t.analysisWavelength}</span>
           <div className="flex items-center gap-1.5">
             <input
               type="number"
@@ -344,7 +346,7 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
               onClick={handleManualApply}
               className="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium shadow-xs transition-colors cursor-pointer"
             >
-              Apply
+              {t.apply}
             </button>
           </div>
 
@@ -354,18 +356,18 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
             title="Automatically detect emission maximum (λmax)"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            Auto Detect Peak (λmax)
+            {t.autoDetectBtn}
           </button>
         </div>
 
         {/* Wavelength Match Feedback */}
         <div className="flex items-center gap-2">
           <div className="px-2.5 py-1 bg-white border border-blue-200 rounded text-slate-700 font-medium">
-            Selected wavelength:{' '}
+            {t.selectedWl}{' '}
             <strong className="text-blue-700 font-mono text-sm">{actualWavelength} nm</strong>
             {actualWavelength !== selectedWavelength && (
               <span className="text-slate-500 text-[11px] ml-1.5">
-                (Nearest data point to {selectedWavelength} nm)
+                ({t.nearestPoint} {selectedWavelength} nm)
               </span>
             )}
           </div>
@@ -383,7 +385,7 @@ export const SpectraViewer: React.FC<SpectraViewerProps> = ({
       </div>
 
       <div className="mt-2 text-right text-[11px] text-slate-400">
-        Tip: Click on any legend item to toggle visibility. Double-click to isolate a single trace.
+        {t.spectraTip}
       </div>
     </div>
   );

@@ -14,6 +14,7 @@ import type {
   TotalArgAnalysisResult,
 } from '../types';
 import { exportAnalysisWorkbook } from '../utils/excel';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ExportSectionProps {
   rawSpectra: RawSpectrumRow[];
@@ -32,6 +33,8 @@ export const ExportSection: React.FC<ExportSectionProps> = ({
   dStandards,
   mixtureValidation,
 }) => {
+  const { t } = useLanguage();
+
   const handleExportExcel = () => {
     exportAnalysisWorkbook({
       rawSpectra,
@@ -50,11 +53,11 @@ export const ExportSection: React.FC<ExportSectionProps> = ({
           <div className="flex items-center gap-2">
             <Download className="w-5 h-5 text-blue-600" />
             <h2 className="text-base font-bold text-slate-900 tracking-tight">
-              Export Comprehensive Scientific Results
+              {t.exportTitle}
             </h2>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Download publication-ready multi-tab Excel workbooks and high-resolution chart images.
+            {t.exportSubtitle}
           </p>
         </div>
 
@@ -64,7 +67,7 @@ export const ExportSection: React.FC<ExportSectionProps> = ({
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold text-sm shadow-md shadow-blue-500/20 transition-all cursor-pointer"
           >
             <FileSpreadsheet className="w-4 h-4" />
-            Export Analysis Excel (.xlsx)
+            {t.exportExcelBtn}
           </button>
         </div>
       </div>
@@ -75,10 +78,10 @@ export const ExportSection: React.FC<ExportSectionProps> = ({
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
           <div>
             <strong className="text-slate-800 font-semibold block">
-              Multi-Sheet Scientific Workbook
+              {t.exportCard1Title}
             </strong>
             <span className="text-slate-500 text-[11px]">
-              Includes Raw Spectra, Extracted Intensities, Total Arg Calibration, Chiral Calibrations, and Full Sample Quantification.
+              {t.exportCard1Desc}
             </span>
           </div>
         </div>
@@ -87,10 +90,10 @@ export const ExportSection: React.FC<ExportSectionProps> = ({
           <Image className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
           <div>
             <strong className="text-slate-800 font-semibold block">
-              Publication Figures (PNG / SVG)
+              {t.exportCard2Title}
             </strong>
             <span className="text-slate-500 text-[11px]">
-              Hover over any chart toolbar to download 300 DPI publication-quality PNG or vector SVG directly.
+              {t.exportCard2Desc}
             </span>
           </div>
         </div>
@@ -99,10 +102,10 @@ export const ExportSection: React.FC<ExportSectionProps> = ({
           <FileText className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
           <div>
             <strong className="text-slate-800 font-semibold block">
-              Complete Traceability
+              {t.exportCard3Title}
             </strong>
             <span className="text-slate-500 text-[11px]">
-              All calculation parameters, fitted equations, R² coefficients, and analysis wavelength metadata are saved.
+              {t.exportCard3Desc}
             </span>
           </div>
         </div>

@@ -24,8 +24,11 @@ import {
 } from './utils/math';
 import { Sparkles, FileSpreadsheet } from 'lucide-react';
 import { downloadExcelTemplate } from './utils/excel';
+import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 
-export function App() {
+function AppContent() {
+  const { t } = useLanguage();
+
   // 1. Raw Spectra state (initialized with authentic demo data)
   const [spectra, setSpectra] = useState<RawSpectrumRow[]>(() => generateDemoSpectra());
   const [isDemoData, setIsDemoData] = useState<boolean>(true);
@@ -108,7 +111,7 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-slate-50/60 flex flex-col text-slate-800 antialiased">
-      {/* Top Navbar */}
+      {/* Top Navbar with Language Switcher */}
       <Header
         isDemoData={isDemoData}
         onLoadDemo={handleLoadDemo}
@@ -132,10 +135,10 @@ export function App() {
               <FileSpreadsheet className="w-8 h-8" />
             </div>
             <h3 className="text-lg font-bold text-slate-900">
-              No Fluorescence Spectra Loaded
+              {t.noDataTitle}
             </h3>
             <p className="text-sm text-slate-500 max-w-md mx-auto mt-1 mb-6">
-              Please upload your 14-column fluorescence dataset (.xlsx / .xls) or load the built-in demo dataset to begin analysis.
+              {t.noDataDesc}
             </p>
             <div className="flex items-center justify-center gap-3">
               <button
@@ -143,14 +146,14 @@ export function App() {
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
-                Load Simulated Demo Data
+                {t.loadDemoBtn}
               </button>
               <button
                 onClick={downloadExcelTemplate}
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors cursor-pointer"
               >
                 <FileSpreadsheet className="w-4 h-4" />
-                Download Excel Template
+                {t.downloadTemplate}
               </button>
             </div>
           </div>
@@ -226,15 +229,20 @@ export function App() {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>
-            S-TM Arginine Fluorescence Assay & Chiral Analysis Platform &bull; Scientific Data Processing System
-          </p>
-          <p className="text-slate-400">
-            Client-Side Browser Execution &bull; 100% Data Confidentiality
-          </p>
+          <p>{t.footerPlatform}</p>
+          <p className="text-slate-400">{t.footerSecurity}</p>
         </div>
       </footer>
     </div>
   );
 }
+
+export function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
+}
+
 export default App;

@@ -1,17 +1,20 @@
 import React from 'react';
 import { Atom } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export const ModelAssumptions: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 mt-6 transition-all">
       <div className="flex items-center gap-2 pb-3.5 border-b border-slate-100">
         <Atom className="w-5 h-5 text-blue-600" />
         <div>
           <h2 className="text-base font-bold text-slate-900 tracking-tight">
-            Methodological Principles & Model Assumptions
+            {t.assumptionsTitle}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Theoretical framework, scientific rigor, and boundary conditions for S-TM arginine assay
+            {t.assumptionsSubtitle}
           </p>
         </div>
       </div>
@@ -24,10 +27,10 @@ export const ModelAssumptions: React.FC = () => {
           </div>
           <div>
             <strong className="text-slate-900 font-semibold block mb-1">
-              Chiral Differentiation via Al³⁺ Coordination
+              {t.asmp1Title}
             </strong>
             <p className="text-slate-600 leading-relaxed">
-              S-TM alone responds sensitively to total arginine regardless of chirality. In the presence of stoichiometric Al³⁺, the ternary complex [S-TM · Al³⁺ · Arg] creates an asymmetric coordination cavity, leading to distinct fluorescence enhancements ($k_L \neq k_D$).
+              {t.asmp1Desc}
             </p>
           </div>
         </div>
@@ -39,10 +42,10 @@ export const ModelAssumptions: React.FC = () => {
           </div>
           <div>
             <strong className="text-slate-900 font-semibold block mb-1">
-              Linear Dynamic Range Fidelity
+              {t.asmp2Title}
             </strong>
             <p className="text-slate-600 leading-relaxed">
-              The probe concentration and fluorometer sensitivity are calibrated such that within the chosen standard range (e.g. 0 – 30 μM), both the total arginine and chiral enantiomers exhibit high linear correlation ($R^2 \ge 0.95$).
+              {t.asmp2Desc}
             </p>
           </div>
         </div>
@@ -54,14 +57,10 @@ export const ModelAssumptions: React.FC = () => {
           </div>
           <div>
             <strong className="text-slate-900 font-semibold block mb-1">
-              Linear Optical Superposition Principle
+              {t.asmp3Title}
             </strong>
             <p className="text-slate-600 leading-relaxed">
-              For any enantiomeric mixture, the total fluorescence response in S-TM/Al³⁺ follows linear superposition:
-              <span className="font-mono block my-1 font-semibold text-purple-900 bg-purple-50/70 p-1 rounded border border-purple-100">
-                y_unknown = b + k_L × C_L + k_D × C_D
-              </span>
-              neglecting non-linear cross-association or cooperative competitive interactions at micro-molar regimes.
+              {t.asmp3Desc}
             </p>
           </div>
         </div>
@@ -73,14 +72,10 @@ export const ModelAssumptions: React.FC = () => {
           </div>
           <div>
             <strong className="text-slate-900 font-semibold block mb-1">
-              Mass Conservation Coupling Constraint
+              {t.asmp4Title}
             </strong>
             <p className="text-slate-600 leading-relaxed">
-              The total concentration obtained from the metal-free S-TM standard curve serves as an invariant mass constraint:
-              <span className="font-mono block my-1 font-semibold text-purple-900 bg-purple-50/70 p-1 rounded border border-purple-100">
-                C_total = C_L + C_D
-              </span>
-              enabling exact algebraic determination of both enantiomeric concentrations.
+              {t.asmp4Desc}
             </p>
           </div>
         </div>
