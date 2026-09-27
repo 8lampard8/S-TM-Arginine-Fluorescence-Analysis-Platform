@@ -12,11 +12,20 @@
 
 ---
 
-## 🎬 Operational Workflow Animation / 操作流程动态演示
+## 🎬 Operational Workflow Demo / 平台实操演示动态图
 
 <div align="center">
-  <img src="public/workflow_animation.svg" alt="S-TM Platform Operational Workflow Animation" width="100%" />
+  <img src="public/workflow_demo.gif" alt="S-TM Platform Practical Workflow Demo" width="100%" />
+  <p><em>✨ 6-Step End-to-End Analytical Workflow: 1. Download Template → 2. Spectra Upload & Integrity Validation → 3. Auto Peak Detection (486 nm) → 4. Total Arg Linear Regression ($R^2=0.9999$) → 5. S-TM/Al³⁺ Dual Calibration & Chiral Solver → 6. Chiral Dashboard & 6-Sheet Excel Report Export</em></p>
+  <p><em>✨ 6 步全流程科研级实操演示：1. 标准模板下载 → 2. 光谱导入与严格合规校验 → 3. 自动寻峰定位 (486 nm) → 4. 总精氨酸标准曲线拟合 ($R^2=0.9999$) → 5. S-TM/Al³⁺ 手性双标线联立拆分 → 6. 手性看板与 6 工作表科研报告导出</em></p>
 </div>
+
+<details>
+<summary><b>📐 View System Architecture & Data Flow Diagram / 查看系统架构与数据流向图 (SVG)</b></summary>
+<div align="center" style="margin-top: 12px;">
+  <img src="public/workflow_animation.svg" alt="S-TM Platform Operational Workflow Pipeline" width="100%" />
+</div>
+</details>
 
 ---
 
