@@ -12,6 +12,14 @@
 
 ---
 
+## 🎬 Operational Workflow Animation / 操作流程动态演示
+
+<div align="center">
+  <img src="public/workflow_animation.svg" alt="S-TM Platform Operational Workflow Animation" width="100%" />
+</div>
+
+---
+
 <a name="english-version"></a>
 ## 🌐 English Version
 

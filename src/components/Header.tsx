@@ -14,6 +14,7 @@ interface HeaderProps {
   onLoadDemo: () => void;
   onReset: () => void;
   hasData: boolean;
+  onOpenDemoModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,6 +22,7 @@ export const Header: React.FC<HeaderProps> = ({
   onLoadDemo,
   onReset,
   hasData,
+  onOpenDemoModal,
 }) => {
   const { t, language, setLanguage } = useLanguage();
 
@@ -108,6 +110,14 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Sparkles className="w-4 h-4 text-purple-600" />
             {t.loadDemo}
+          </button>
+
+          <button
+            onClick={onOpenDemoModal}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-xs cursor-pointer"
+            title="Open animated step-by-step interactive workflow demo"
+          >
+            {t.workflowDemoBtn}
           </button>
 
           {hasData && (

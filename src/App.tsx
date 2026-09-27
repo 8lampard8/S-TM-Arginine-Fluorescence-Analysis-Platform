@@ -8,6 +8,7 @@ import { ChiralResultsDashboard } from './components/ChiralResultsDashboard';
 import { MixtureValidationSection } from './components/MixtureValidationSection';
 import { ModelAssumptions } from './components/ModelAssumptions';
 import { ExportSection } from './components/ExportSection';
+import { WorkflowDemoModal } from './components/WorkflowDemoModal';
 import { generateDemoSpectra } from './data/demoData';
 import type {
   BaselineInterceptMode,
@@ -65,6 +66,9 @@ function AppContent() {
   // 5. Mixture validation items
   const [validationItems, setValidationItems] = useState<MixtureValidationItem[]>([]);
 
+  // 6. Workflow animated demo modal
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+
   // Synchronize wavelength when new dataset is loaded
   const handleDataLoaded = (data: RawSpectrumRow[], isDemo: boolean) => {
     setSpectra(data);
@@ -111,12 +115,19 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-slate-50/60 flex flex-col text-slate-800 antialiased">
-      {/* Top Navbar with Language Switcher */}
+      {/* Top Navbar with Language Switcher & Workflow Demo Button */}
       <Header
         isDemoData={isDemoData}
         onLoadDemo={handleLoadDemo}
         onReset={handleReset}
         hasData={spectra.length > 0}
+        onOpenDemoModal={() => setIsDemoModalOpen(true)}
+      />
+
+      {/* Animated Workflow Demo Modal */}
+      <WorkflowDemoModal
+        isOpen={isDemoModalOpen}
+        onClose={() => setIsDemoModalOpen(false)}
       />
 
       {/* Main Workspace */}
