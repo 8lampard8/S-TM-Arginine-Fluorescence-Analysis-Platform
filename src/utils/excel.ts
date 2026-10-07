@@ -335,7 +335,7 @@ export function exportAnalysisWorkbook(params: {
       totalArgResult.regression.equation,
       Number(totalArgResult.regression.slope.toFixed(5)),
       Number(totalArgResult.regression.intercept.toFixed(5)),
-      Number(totalArgResult.regression.rSquared.toFixed(5)),
+      (Number.isFinite(totalArgResult.regression.rSquared) ? Number(totalArgResult.regression.rSquared.toFixed(5)) : 'n/a (published)'),
       totalArgResult.regression.quality,
     ],
     [
@@ -343,7 +343,7 @@ export function exportAnalysisWorkbook(params: {
       chiralResult.lRegression.equation,
       Number(chiralResult.lRegression.slope.toFixed(5)),
       Number(chiralResult.lRegression.intercept.toFixed(5)),
-      Number(chiralResult.lRegression.rSquared.toFixed(5)),
+      (Number.isFinite(chiralResult.lRegression.rSquared) ? Number(chiralResult.lRegression.rSquared.toFixed(5)) : 'n/a (published)'),
       chiralResult.lRegression.quality,
     ],
     [
@@ -351,7 +351,7 @@ export function exportAnalysisWorkbook(params: {
       chiralResult.dRegression.equation,
       Number(chiralResult.dRegression.slope.toFixed(5)),
       Number(chiralResult.dRegression.intercept.toFixed(5)),
-      Number(chiralResult.dRegression.rSquared.toFixed(5)),
+      (Number.isFinite(chiralResult.dRegression.rSquared) ? Number(chiralResult.dRegression.rSquared.toFixed(5)) : 'n/a (published)'),
       chiralResult.dRegression.quality,
     ],
     [

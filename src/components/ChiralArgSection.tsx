@@ -13,6 +13,7 @@ import type {
 import { PlotlyChart } from './PlotlyChart';
 import type { Data, Layout } from 'plotly.js-dist-min';
 import { useLanguage } from '../i18n/LanguageContext';
+import type { ConcentrationUnit } from '../types';
 
 interface ChiralArgSectionProps {
   chiralResult: ChiralAnalysisResult;
@@ -46,6 +47,10 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
     yChiralUnknown,
     cTotal,
   } = chiralResult;
+  // Unit of the results (published calibration is always μM)
+  const dispUnit = chiralResult.unit;
+  const isPublished = !!chiralResult.published;
+  const fmtR2 = (r: number) => (Number.isFinite(r) ? r.toFixed(4) : 'n/a');
 
   const handleLChange = (field: 'std1' | 'std2' | 'std3', val: string) => {
     const num = parseFloat(val);
@@ -62,10 +67,10 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
   };
 
   const plotData = useMemo(() => {
-    const xL = [lStandards.std1, lStandards.std2, lStandards.std3];
+    const xL = chiralResult.lResponses.map((r) => r.c);
     const yL = chiralResult.lResponses.map((r) => r.y);
 
-    const xD = [dStandards.std1, dStandards.std2, dStandards.std3];
+    const xD = chiralResult.dResponses.map((r) => r.c);
     const yD = chiralResult.dResponses.map((r) => r.y);
 
     const maxX = Math.max(...xL, ...xD, cTotal * 1.05);
@@ -91,7 +96,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
         },
         hovertemplate:
           '<b>L-Arg Std</b><br>Conc: %{x} ' +
-          lStandards.unit +
+          dispUnit +
           '<br>Response: %{y:.4f}<extra></extra>',
       },
       {
@@ -117,7 +122,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
         },
         hovertemplate:
           '<b>D-Arg Std</b><br>Conc: %{x} ' +
-          dStandards.unit +
+          dispUnit +
           '<br>Response: %{y:.4f}<extra></extra>',
       },
       {
@@ -143,15 +148,14 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
         },
         hovertemplate:
           '<b>Unknown Sample Response</b><br>Total Arg: %{x:.2f} ' +
-          lStandards.unit +
+          dispUnit +
           '<br>Response: %{y:.4f}<extra></extra>',
       },
     ];
 
     return traces;
   }, [
-    lStandards,
-    dStandards,
+    dispUnit,
     chiralResult.lResponses,
     chiralResult.dResponses,
     lRegression,
@@ -161,8 +165,9 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
   ]);
 
   const layout: Partial<Layout> = useMemo(() => {
-    const yAxisTitle =
-      responseMode === 'raw'
+    const yAxisTitle = isPublished
+      ? 'ΔF = F - F₀ (S-TM+Al³⁺) / a.u.'
+      : responseMode === 'raw'
         ? 'Raw Intensity F / a.u.'
         : responseMode === 'delta'
         ? 'ΔF = F - F_Al / a.u.'
@@ -175,7 +180,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
       },
       xaxis: {
         title: {
-          text: `${t.axisEnantiomerConc} ${lStandards.unit}`,
+          text: `${t.axisEnantiomerConc} ${dispUnit}`,
           font: { size: 11, color: '#475569' },
         },
         showgrid: true,
@@ -194,7 +199,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
         font: { size: 10 },
       },
     };
-  }, [responseMode, lStandards.unit, t.chartTitleChiralCal, t.axisEnantiomerConc]);
+  }, [responseMode, isPublished, dispUnit, t.chartTitleChiralCal, t.axisEnantiomerConc]);
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-5 flex flex-col h-full">
@@ -238,7 +243,17 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
           <div className="flex items-center justify-between">
             <span className="font-bold text-purple-800 flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-purple-600 inline-block" />
-              {t.lArgStandards} ({lStandards.unit}):
+              {t.lArgStandards}
+              <select
+                value={lStandards.unit}
+                onChange={(e) => onUpdateLStandards({ ...lStandards, unit: e.target.value as ConcentrationUnit })}
+                className="ml-1 px-1 py-0 bg-white border border-slate-300 rounded text-[11px] font-semibold cursor-pointer"
+              >
+                <option value="μM">μM</option>
+                <option value="mM">mM</option>
+                <option value="eq">eq</option>
+              </select>
+              :
             </span>
           </div>
 
@@ -278,7 +293,17 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
           <div className="flex items-center justify-between">
             <span className="font-bold text-amber-800 flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
-              {t.dArgStandards} ({dStandards.unit}):
+              {t.dArgStandards}
+              <select
+                value={dStandards.unit}
+                onChange={(e) => onUpdateDStandards({ ...dStandards, unit: e.target.value as ConcentrationUnit })}
+                className="ml-1 px-1 py-0 bg-white border border-slate-300 rounded text-[11px] font-semibold cursor-pointer"
+              >
+                <option value="μM">μM</option>
+                <option value="mM">mM</option>
+                <option value="eq">eq</option>
+              </select>
+              :
             </span>
           </div>
 
@@ -331,7 +356,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
           <div className="font-mono text-[11px] font-bold text-purple-950 truncate">
             {lRegression.equation}
           </div>
-          <div className="text-[10px] text-purple-600">R² = {lRegression.rSquared.toFixed(4)}</div>
+          <div className="text-[10px] text-purple-600">R² = {fmtR2(lRegression.rSquared)}</div>
         </div>
 
         <div className="p-2 bg-amber-50/50 border border-amber-200 rounded-lg">
@@ -339,7 +364,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
           <div className="font-mono text-[11px] font-bold text-amber-950 truncate">
             {dRegression.equation}
           </div>
-          <div className="text-[10px] text-amber-600">R² = {dRegression.rSquared.toFixed(4)}</div>
+          <div className="text-[10px] text-amber-600">R² = {fmtR2(dRegression.rSquared)}</div>
         </div>
 
         <div className="p-2 bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg text-center flex flex-col justify-center">
@@ -355,7 +380,34 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
         </div>
       </div>
 
+      {/* Published-calibration details: ΔF with the measured blank, LODs and linear-range checks */}
+      {chiralResult.published && (
+        <div className="mt-3 p-2.5 bg-indigo-50/60 border border-indigo-200 rounded-lg text-[11px] space-y-1">
+          <div className="font-mono text-indigo-950">
+            ΔF = F_sample − F₀ = {totalArgResult.extracted.chiral_unknown.toFixed(1)} −{' '}
+            {chiralResult.published.f0.toFixed(1)} = {chiralResult.published.deltaF.toFixed(1)} a.u.
+          </div>
+          <div className="font-mono text-slate-700">
+            C_L = (10558.55·C_total − ΔF) / 5600.29 &nbsp;|&nbsp; C_D = (ΔF − 4958.26·C_total) / 5600.29
+          </div>
+          <div className="text-slate-500">
+            LOD: L-Arg {chiralResult.published.lodL} μM · D-Arg {chiralResult.published.lodD} μM
+          </div>
+          {chiralResult.published.exceedsRangeL && (
+            <div className="text-amber-800 font-semibold">
+              ⚠ C_L &gt; {chiralResult.published.rangeL} μM: beyond the 1st linear region (0–4.32 eq).
+            </div>
+          )}
+          {chiralResult.published.exceedsRangeD && (
+            <div className="text-amber-800 font-semibold">
+              ⚠ C_D &gt; {chiralResult.published.rangeD} μM: beyond the 1st linear region (0–1.99 eq).
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Model Intercept Solver Option */}
+      {!isPublished && (
       <div className="mt-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-slate-600">
           <Settings2 className="w-3.5 h-3.5 text-slate-500" />
@@ -398,6 +450,7 @@ export const ChiralArgSection: React.FC<ChiralArgSectionProps> = ({
           </button>
         </div>
       </div>
+      )}
     </div>
   );
 };

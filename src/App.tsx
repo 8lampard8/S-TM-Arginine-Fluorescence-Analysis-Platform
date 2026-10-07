@@ -12,6 +12,7 @@ import { WorkflowDemoModal } from './components/WorkflowDemoModal';
 import { generateDemoSpectra } from './data/demoData';
 import type {
   BaselineInterceptMode,
+  CalibrationSource,
   MixtureValidationItem,
   RawSpectrumRow,
   ResponseMode,
@@ -21,11 +22,14 @@ import {
   autoDetectPeakWavelength,
   extractIntensitiesAtWavelength,
   performChiralAnalysis,
+  performPublishedChiralAnalysis,
+  performPublishedTotalArgAnalysis,
   performTotalArgAnalysis,
 } from './utils/math';
 import { Sparkles, FileSpreadsheet } from 'lucide-react';
 import { downloadExcelTemplate } from './utils/excel';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
+import { AnalysisParameters } from './components/AnalysisParameters';
 
 function AppContent() {
   const { t } = useLanguage();
@@ -62,6 +66,7 @@ function AppContent() {
   // 4. Response Formulation & Baseline Intercept Mode
   const [responseMode, setResponseMode] = useState<ResponseMode>('relative');
   const [baselineMode, setBaselineMode] = useState<BaselineInterceptMode>('average');
+  const [calibrationSource, setCalibrationSource] = useState<CalibrationSource>('fit');
 
   // 5. Mixture validation items
   const [validationItems, setValidationItems] = useState<MixtureValidationItem[]>([]);
@@ -97,12 +102,24 @@ function AppContent() {
   // Left column calculation: Total Arg Analysis
   const totalArgResult = useMemo(() => {
     if (!extracted) return null;
+    if (calibrationSource === 'published') {
+      return performPublishedTotalArgAnalysis(extracted, standardsTotal);
+    }
     return performTotalArgAnalysis(extracted, standardsTotal, responseMode);
-  }, [extracted, standardsTotal, responseMode]);
+  }, [extracted, standardsTotal, responseMode, calibrationSource]);
 
   // Right column calculation: Chiral Analysis
   const chiralResult = useMemo(() => {
     if (!extracted || !totalArgResult) return null;
+    if (calibrationSource === 'published') {
+      return performPublishedChiralAnalysis(
+        extracted,
+        totalArgResult,
+        standardsL,
+        standardsD,
+        baselineMode
+      );
+    }
     return performChiralAnalysis(
       extracted,
       totalArgResult,
@@ -111,7 +128,26 @@ function AppContent() {
       responseMode,
       baselineMode
     );
-  }, [extracted, totalArgResult, standardsL, standardsD, responseMode, baselineMode]);
+  }, [
+    extracted,
+    totalArgResult,
+    standardsL,
+    standardsD,
+    responseMode,
+    baselineMode,
+    calibrationSource,
+  ]);
+
+  // Standards re-expressed in the unit the chiral results are reported in
+  // (L and D curves share one unit; published mode always reports μM)
+  const reportL = useMemo(
+    () => (chiralResult ? { ...standardsL, unit: chiralResult.unit } : standardsL),
+    [standardsL, chiralResult]
+  );
+  const reportD = useMemo(
+    () => (chiralResult ? { ...standardsD, unit: chiralResult.unit } : standardsD),
+    [standardsD, chiralResult]
+  );
 
   return (
     <div className="min-h-screen bg-slate-50/60 flex flex-col text-slate-800 antialiased">
@@ -170,6 +206,12 @@ function AppContent() {
           </div>
         ) : (
           <>
+            {/* Fixed S-TM concentration, eq/μM conversion & calibration source */}
+            <AnalysisParameters
+              calibrationSource={calibrationSource}
+              onChangeSource={setCalibrationSource}
+            />
+
             {/* Step 3: Interactive Spectral Viewer & Wavelength Selection */}
             <SpectraViewer
               spectra={spectra}
@@ -207,14 +249,14 @@ function AppContent() {
                 {/* Final Chiral Results Dashboard */}
                 <ChiralResultsDashboard
                   chiralResult={chiralResult}
-                  lStandards={standardsL}
-                  dStandards={standardsD}
+                  lStandards={reportL}
+                  dStandards={reportD}
                 />
 
                 {/* Optional Scientific Mixture Validation Module (Section 19) */}
                 <MixtureValidationSection
                   chiralResult={chiralResult}
-                  lStandards={standardsL}
+                  lStandards={reportL}
                   validationItems={validationItems}
                   onUpdateValidationItems={setValidationItems}
                 />
@@ -227,8 +269,8 @@ function AppContent() {
                   rawSpectra={spectra}
                   totalArgResult={totalArgResult}
                   chiralResult={chiralResult}
-                  lStandards={standardsL}
-                  dStandards={standardsD}
+                  lStandards={reportL}
+                  dStandards={reportD}
                   mixtureValidation={validationItems}
                 />
               </>

@@ -11,6 +11,7 @@ import type {
 import { PlotlyChart } from './PlotlyChart';
 import type { Data, Layout } from 'plotly.js-dist-min';
 import { useLanguage } from '../i18n/LanguageContext';
+import { convertConcentration } from '../utils/math';
 
 interface TotalArgSectionProps {
   result: TotalArgAnalysisResult;
@@ -30,6 +31,10 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
   const { t } = useLanguage();
   const { regression, calculatedTotalArg, responses, isExtrapolated } =
     result;
+  // Unit the result is reported in (published calibration always reports μM)
+  const dispUnit = result.standards.unit;
+  const isPublished = !!result.published;
+  const rSqText = Number.isFinite(regression.rSquared) ? regression.rSquared.toFixed(4) : 'n/a';
 
   const handleStdChange = (field: 'std1' | 'std2' | 'std3', value: string) => {
     const num = parseFloat(value);
@@ -72,7 +77,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
           line: { color: '#1e3a8a', width: 1.5 },
         },
         text: regression.points.map((p) => p.label),
-        hovertemplate: '<b>%{text}</b><br>Conc: %{x} ' + standards.unit + '<br>Response: %{y:.4f}<extra></extra>',
+        hovertemplate: '<b>%{text}</b><br>Conc: %{x} ' + dispUnit + '<br>Response: %{y:.4f}<extra></extra>',
       },
       {
         x: xLine,
@@ -97,13 +102,13 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
         },
         hovertemplate:
           '<b>Unknown Sample</b><br>Calculated Conc: %{x:.2f} ' +
-          standards.unit +
+          dispUnit +
           '<br>Response: %{y:.4f}<extra></extra>',
       },
     ];
 
     return traces;
-  }, [regression, calculatedTotalArg, responses.yUnknown, standards.unit]);
+  }, [regression, calculatedTotalArg, responses.yUnknown, dispUnit]);
 
   const layout: Partial<Layout> = useMemo(() => {
     const yAxisTitle =
@@ -120,7 +125,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
       },
       xaxis: {
         title: {
-          text: `${t.axisArgConc} ${standards.unit}`,
+          text: `${t.axisArgConc} ${dispUnit}`,
           font: { size: 11, color: '#475569' },
         },
         showgrid: true,
@@ -139,7 +144,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
         font: { size: 10 },
       },
     };
-  }, [responseMode, standards.unit, t.chartTitleTotalCal, t.axisArgConc]);
+  }, [responseMode, dispUnit, t.chartTitleTotalCal, t.axisArgConc]);
 
   const qcLabel =
     regression.quality === 'Good'
@@ -190,6 +195,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
             >
               <option value="μM">μM</option>
               <option value="mM">mM</option>
+              <option value="eq">eq (×10 μM)</option>
             </select>
           </div>
         </div>
@@ -240,6 +246,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
       </div>
 
       {/* 2. Response Metric Selection */}
+      {!isPublished && (
       <div className="mt-3.5 p-3 bg-slate-50 border border-slate-200/80 rounded-lg text-xs">
         <span className="font-semibold text-slate-700 block mb-2">
           {t.responseFormulationTitle}
@@ -282,6 +289,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
           </button>
         </div>
       </div>
+      )}
 
       {/* Extracted Values & Responses Micro-table */}
       <div className="mt-3 border border-slate-200 rounded-lg overflow-hidden text-xs">
@@ -342,7 +350,7 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
         <div className={`p-2 border rounded-lg text-center ${qcColor}`}>
           <span className="text-[10px] block opacity-80">{t.rSquaredCoeff}</span>
           <span className="font-mono font-bold text-xs">
-            {regression.rSquared.toFixed(4)}{' '}
+            {rSqText}{' '}
             <span className="text-[10px] font-normal">({qcLabel})</span>
           </span>
         </div>
@@ -356,14 +364,22 @@ export const TotalArgSection: React.FC<TotalArgSectionProps> = ({
               {t.totalArgBannerLabel}
             </span>
             <div className="text-xl font-extrabold text-blue-900 tracking-tight font-mono">
-              C_total = {calculatedTotalArg.toFixed(2)} {standards.unit}
+              C_total = {calculatedTotalArg.toFixed(2)} {dispUnit}
             </div>
+            {dispUnit !== 'μM' && (
+              <div className="text-xs font-mono text-blue-700">
+                = {convertConcentration(calculatedTotalArg, dispUnit, 'μM').toFixed(2)} μM
+              </div>
+            )}
+            {result.published && (
+              <div className="text-[10px] text-slate-500 mt-0.5">LOD = {result.published.lod} μM</div>
+            )}
           </div>
 
           <div className="text-right text-xs">
             <span className="text-slate-500 text-[10px] block">Formula:</span>
             <span className="font-mono text-slate-700 text-[11px] font-medium">
-              (y_unk - b) / k
+              {isPublished ? '(F - 8097.84) / 2713.62' : '(y_unk - b) / k'}
             </span>
           </div>
         </div>

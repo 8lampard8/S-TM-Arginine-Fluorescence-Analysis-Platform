@@ -1,4 +1,7 @@
-export type ConcentrationUnit = 'μM' | 'mM';
+export type ConcentrationUnit = 'μM' | 'mM' | 'eq';
+
+/** 'fit' = regress the uploaded standards; 'published' = fixed calibration equations (μM) */
+export type CalibrationSource = 'fit' | 'published';
 
 export type ResponseMode = 'raw' | 'delta' | 'relative';
 
@@ -72,6 +75,8 @@ export interface TotalArgAnalysisResult {
   calculatedTotalArg: number;
   isExtrapolated: boolean;
   extrapolationWarning?: string;
+  /** Present only when the published calibration is used */
+  published?: { lod: number; belowLod: boolean };
 }
 
 export type BaselineInterceptMode = 'average' | 'zero' | 'weighted';
@@ -96,6 +101,19 @@ export interface ChiralAnalysisResult {
   warningMessage?: string;
   isExtrapolated: boolean;
   baselineMode: BaselineInterceptMode;
+  /** Concentration unit of cL / cD / cTotal / dResponses.c */
+  unit: ConcentrationUnit;
+  /** Present only when the published calibration is used */
+  published?: {
+    f0: number;
+    deltaF: number;
+    lodL: number;
+    lodD: number;
+    rangeL: number;
+    rangeD: number;
+    exceedsRangeL: boolean;
+    exceedsRangeD: boolean;
+  };
 }
 
 export interface MixtureValidationItem {
